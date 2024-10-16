@@ -88,27 +88,7 @@ on:
         required: false
 
 jobs:
-  project_data:
-    runs-on: ubuntu-latest
-    outputs:
-      project_name: ${{ steps.getowner.outputs.repo_name }}
-    steps:
-      # Get the owner repo
-      - name: Get owner
-        id: getowner
-        run: |
-          repo_owner=`echo "$GITHUB_REPOSITORY" | cut -f 1 -d "/"`
-          repo_name=`echo "$GITHUB_REPOSITORY" | cut -f 2 -d "/"`
-          echo "owner=$repo_owner" >> $GITHUB_OUTPUT
-          echo "repo_name=$repo_name" >> $GITHUB_OUTPUT
-      - name: outputs
-        run: |
-          echo "cloud:      ${{ inputs.target_cloud }}"
-          echo "cloud_type: ${{ inputs.target_cloud_type }}"
-
   deploy-aws-eb:
-    needs:
-      - project_data
     uses: ./.github/workflows/deploy-aws-eb.yml
     if: ${{ inputs.target_cloud == 'AWS' && ( inputs.target_cloud_type == 'eb' || inputs.target_cloud_type == 'elasticbeanstalk' ) }}
     with:
@@ -132,8 +112,6 @@ jobs:
     secrets: inherit
 
   deploy-aws-eks:
-    needs:
-      - project_data
     uses: ./.github/workflows/terragrunt-aws.yml
     if: ${{ inputs.target_cloud == 'AWS' && ( inputs.target_cloud_type == 'kubernetes' || inputs.target_cloud_type == 'eks' ) }}
     with:
@@ -155,8 +133,6 @@ jobs:
     secrets: inherit
 
   deploy-aws-lambda:
-    needs:
-      - project_data
     uses: ./.github/workflows/terragrunt-aws.yml
     if: ${{ inputs.target_cloud == 'AWS' && inputs.target_cloud_type == 'lambda' }}
     with:
