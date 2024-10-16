@@ -76,26 +76,7 @@ on:
         required: false
 
 jobs:
-  project_data:
-    runs-on: ubuntu-latest
-    outputs:
-      project_name: ${{ steps.getowner.outputs.repo_name }}
-    steps:
-      # Get the owner repo
-      - name: Get owner
-        id: getowner
-        run: |
-          repo_owner=`echo "$GITHUB_REPOSITORY" | cut -f 1 -d "/"`
-          repo_name=`echo "$GITHUB_REPOSITORY" | cut -f 2 -d "/"`
-          echo "owner=$repo_owner" >> $GITHUB_OUTPUT
-          echo "repo_name=$repo_name" >> $GITHUB_OUTPUT
-      - name: outputs
-        run: |
-          echo "cloud:      ${{ inputs.target_cloud }}"
-
   deploy-apigw-aws:
-    needs:
-      - project_data
     uses: ./.github/workflows/terragrunt-apigw-aws.yml
     if: ${{ inputs.target_cloud == 'AWS' && inputs.apis_enabled == true }}
     with:
